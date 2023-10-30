@@ -1,31 +1,34 @@
 const express = require('express')
 const dotenv = require('dotenv')
 
+// Bring in bootcamps routes
+const bootcamps = require('./routes/bootcamps')
+
 // Load env vars
 
 dotenv.config({path: './config/config.env'})
 
 const app = express()
 
-app.get('/api/v1/bootcamps', (req,res) => {
-    res.status(200).json({success:true, msg: "show all bootcamps"})
-})
+// Mount Routes
 
-app.get('/api/v1/bootcamps/:id', (req,res) => {
-    res.status(200).json({success:true, msg: `get details of bootcamp ${req.params.id}`})
-})
+/* 
+Earlier we used to write all routes within server.js using app.get()/ app.post() etc.
+To make code look cleaner, we put relevent routes in anoter js file and bind them here 
+using app.use()
 
-app.post('/api/v1/bootcamps', (req,res) => {
-    res.status(200).json({success:true, msg: "Add bootcamp"})
-})
+Since all the bootcamp routes use the same route i.e. /api/v1/bootcamps, in app.use()
+we can pass that api path as first parameter.
+The second parameter could be the imported routes from the seperate js file.
 
-app.put('/api/v1/bootcamps/:id', (req,res) => {
-    res.status(200).json({success:true, msg: `Update bootcamp ${req.params.id}`})
-})
+In a way, app.use() hooks all the routes related to bootcamps to /api/v1/bootcamps.
+Remember that we need to make changes in that seperate bootcamp routes file to use
+express router instead of app.<httpmethod>().
 
-app.delete('/api/v1/bootcamps/:id', (req,res) => {
-    res.status(200).json({success:true, msg: `Delete bootcamp ${req.params.id}`})
-})
+refer to ./routes/bootcamps.js for more information. 
+*/
+
+app.use('/api/v1/bootcamps', bootcamps)
 
 const PORT = process.env.PORT || 5001
 
