@@ -1,14 +1,23 @@
 const express = require('express')
 const dotenv = require('dotenv')
+const morgan = require('morgan')
+const connectDB = require('./util/mongoConfig')
+const logger = require('./util/logger')
 
 // Bring in bootcamps routes
-const bootcamps = require('./routes/bootcamps')
+const bootcamps = require('./routes/bootcamps');
 
 // Load env vars
 
-dotenv.config({path: './config/config.env'})
+dotenv.config({path: './config/config.env'});
 
-const app = express()
+connectDB();
+
+const app = express();
+
+// Logger using morgan
+//app.use(morgan('dev'))
+logger.info("Server started");
 
 // Mount Routes
 
@@ -28,11 +37,17 @@ express router instead of app.<httpmethod>().
 refer to ./routes/bootcamps.js for more information. 
 */
 
-app.use('/api/v1/bootcamps', bootcamps)
+app.use('/api/v1/bootcamps', bootcamps);
 
-const PORT = process.env.PORT || 5001
 
-app.listen(
+const PORT = process.env.PORT || 5001 ;
+
+const server = app.listen(
     PORT, 
     console.log(` Server is running in ${process.env.NODE_ENV} mode on port  ${PORT}`)
-)
+);
+
+process.on('unhandledRejection', (err, promise) => {
+    logger.error(`Error: ${err.message}`);
+    server.close(()=>process.exit(1));
+})
