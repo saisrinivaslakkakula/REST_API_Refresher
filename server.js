@@ -2,6 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 const connectDB = require('./util/mongoConfig')
+const errorHandler = require('./middleware/errorHandler')
 const logger = require('./util/logger')
 
 // Bring in bootcamps routes
@@ -42,6 +43,8 @@ refer to ./routes/bootcamps.js for more information.
 
 app.use('/api/v1/bootcamps', bootcamps);
 
+// IMP: we have to add custom error handler after the routes
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5001 ;
 
