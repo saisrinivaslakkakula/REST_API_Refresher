@@ -15,6 +15,9 @@ connectDB();
 
 const app = express();
 
+// to destructure json from req.body we need to add this line in server.js
+app.use(express.json())
+
 // Logger using morgan
 //app.use(morgan('dev'))
 logger.info("Server started");
