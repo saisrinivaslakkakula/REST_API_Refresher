@@ -1,4 +1,5 @@
 const logger = require('../util/logger')
+const ErrorResponse = require('../util/errorResponse')
 const Bootcamp = require('../models/bootcamp')
 //@desc     Get All Bootcamps
 //@route    /api/v1/bootcamps
@@ -12,10 +13,7 @@ exports.getBootcamps = async (req,res,next) => {
             data: bootcamps
         })
     } catch (err) {
-        res.status(400).json({
-            success: false,
-            error: err.message
-        })
+        next(err)
     }
     
 }
@@ -28,7 +26,7 @@ exports.getBootcamp = async (req,res,next) => {
         const bootcampByID = await Bootcamp.findById(req.params.id)
 
         if (!bootcampByID) {
-            return res.status(400).json({success:false})
+            return next(new ErrorResponse(`Resource not found with id ${req.params.id}`, 404));
         }
         res.status(200).json({
             success: true,
@@ -36,7 +34,17 @@ exports.getBootcamp = async (req,res,next) => {
         })
 
     } catch (err) {
-        next(err);
+        // earlier when we were using custom error handler : 
+        // next(err);
+
+        // When we use node js Error handler and extend new custom error Handler
+
+        //next(new ErrorResponse(`Bootcamp not found with id ${req.params.id}`, 404));
+
+        // since we have modified error Handler again to return Error response based on the return status,
+        // we can again use next(err) here
+
+        next(err)
     }
 }
 
@@ -51,8 +59,7 @@ exports.addBootCamp = async (req,res,next) => {
         data: bootcamp
     })
     } catch (err) {
-        res.status(400).json({success:false})
-
+        next(err)
     }
 }
 
@@ -67,15 +74,12 @@ exports.updateBootCamp = async (req,res,next) => {
         })
 
         if (!updateBootcamp) {
-            return res.status(400).json({success: false})
+            return next(new ErrorResponse(`Resource not found with id ${req.params.id}`, 404));
         }
 
         res.status(200).json({success: true, data: updateBootcamp})
     } catch (err) {
-        res.status(400).json({
-            success: false,
-            error: err.message
-        })
+        next(err)
     }
 }
 
@@ -87,14 +91,10 @@ exports.deleteBootCamp = async(req,res,next) => {
         const updateBootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
 
         if (!updateBootcamp) {
-            return res.status(400).json({success: false})
+            return next(new ErrorResponse(`Resource not found with id ${req.params.id}`, 404));
         }
-
         res.status(200).json({success: true, data: {}})
     } catch (err) {
-        res.status(400).json({
-            success: false,
-            error: err.message
-        })
+        next(err)
     }
 }
