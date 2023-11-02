@@ -5,14 +5,14 @@ const connectDB = require('./util/mongoConfig')
 const errorHandler = require('./middleware/errorHandler')
 const logger = require('./util/logger')
 
-// Bring in bootcamps routes
-const bootcamps = require('./routes/bootcamps');
 
 // Load env vars
-
 dotenv.config({path: './config/config.env'});
 
 connectDB();
+
+// Bring in bootcamps routes
+const bootcamps = require('./routes/bootcamps');
 
 const app = express();
 
