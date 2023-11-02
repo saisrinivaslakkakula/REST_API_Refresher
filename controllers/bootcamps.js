@@ -2,6 +2,8 @@ const logger = require('../util/logger')
 const ErrorResponse = require('../util/errorResponse')
 const Bootcamp = require('../models/bootcamp')
 const asyncHandler = require('../middleware/asyncHandler')
+const geocoder = require('../util/geocoder')
+const bootcamp = require('../models/bootcamp')
 //@desc     Get All Bootcamps
 //@route    /api/v1/bootcamps
 //@access   Public
@@ -67,4 +69,33 @@ exports.deleteBootCamp = asyncHandler(async(req,res,next) => {
         return next(new ErrorResponse(`Resource not found with id ${req.params.id}`, 404));
     }
     res.status(200).json({success: true, data: {}})
+})
+
+//@desc     get Bootcamps with Radius
+//@route    /api/v1/bootcamps/radius/:zipcode/:distance
+//@access   Public
+exports.getBootcampsInRadius = asyncHandler(async(req,res,next) => {
+    const {zipcode,distance} = req.params;
+
+    // get Lattitude and longitude and geocoder
+    const loc = await geocoder.geocode(zipcode);
+    const lat = loc[0].latitude;
+    const long = loc[0].longitude;
+    
+    // Radius of earth in miles  = 3963 miles
+    const radius = distance / 3963
+
+    const bootcamps = await Bootcamp.find(
+        {
+            location : { $geoWithin: { $centerSphere: [ [long, lat ], radius] }}
+        }
+    );
+    console.log(long)
+    res.status(200).json(
+        {
+            success: true,
+            count: bootcamps.length,
+            data: bootcamps
+        }
+    )
 })

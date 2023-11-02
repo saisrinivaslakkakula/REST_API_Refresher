@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const {getBootcamp, getBootcamps, addBootCamp, updateBootCamp, deleteBootCamp} = require('../controllers/bootcamps')
+const {getBootcamp, getBootcamps, addBootCamp, updateBootCamp, deleteBootCamp, getBootcampsInRadius} = require('../controllers/bootcamps')
 /*
 EDIT 1:
 Since we have already hooked up all routes in the server.js to /api/v1/bootcamps,
@@ -21,6 +21,7 @@ router.route('/').get(getBootcamps).post(addBootcamp)
 This means each controller function mounter to single similar route could be 
 added with cascaded respective HTTP methods by passing in their respective contoller functions
 */
+router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius)
 
 router.route('/').get(getBootcamps).post(addBootCamp)
 
